@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>Ciney AI — 播放检查</title>
+<style>
+*{box-sizing:border-box}body{margin:0;padding:32px 24px;background:#080909;color:#eee;font:16px/1.6 system-ui,sans-serif}main{max-width:1100px;margin:auto}h1{font-size:28px;font-weight:500}p{color:#b7c0b9}button,a{color:#d7ef58}button{font:inherit;padding:12px 22px;border:1px solid #d7ef5877;background:#1b2017;border-radius:12px;cursor:pointer}section{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin:28px 0}article{min-width:0}video{display:block;width:100%;aspect-ratio:16/9;background:#000;border-radius:16px}h2{font-size:17px;font-weight:500}output{display:block;margin-top:8px;font-size:14px;color:#d7ef58;overflow-wrap:anywhere}pre{padding:20px;white-space:pre-wrap;background:#161a17;border-radius:16px;font:14px/1.6 monospace;overflow-wrap:anywhere}@media(max-width:700px){section{grid-template-columns:1fr}}
+</style>
+</head>
+<body><main><a href="../">← 返回网站</a><h1>电脑播放检查</h1><p>点击一次“开始检查”，看看下面哪些画面会动。此页使用浏览器原生播放器。</p><button id="start">开始检查</button>
+<section>
+<article><h2>1 · 网页原视频 MP4</h2><video id="original" muted playsinline controls loop preload="none" data-file="../shared/field/on-location.mp4"></video><output id="original-state">等待检查</output></article>
+<article><h2>2 · 轻量版 MP4</h2><video id="light" muted playsinline controls loop preload="none" data-file="../shared/field/cineybot-park-loop-mobile.mp4"></video><output id="light-state">等待检查</output></article>
+<article><h2>3 · 另一种编码 WebM</h2><video id="webm" muted playsinline controls loop preload="none" data-file="../assets/playback-check-frame.webm"></video><output id="webm-state">等待检查</output></article>
+</section><p>检查后，把下面的结果复制给我即可；此页不会上传检测信息。</p><button id="copy">复制结果</button><pre id="result">等待检查</pre>
+<script>
+const videos=[...document.querySelectorAll('video')];
+const errors=new Map();
+function report(){
+ const lines=videos.map((v,i)=>`${i+1}. ${v.id}: ${!v.paused?'playing':'paused'}; time=${v.currentTime.toFixed(1)}s; ready=${v.readyState}; error=${v.error?`${v.error.code} ${v.error.message}`:errors.get(v.id)||'none'}`);
+ document.querySelector('#result').textContent=[`MP4/H264: ${videos[0].canPlayType('video/mp4; codecs="avc1.640028"')||'unsupported'}`,`WebM/VP9: ${videos[0].canPlayType('video/webm; codecs="vp9"')||'unsupported'}`,...lines].join('\n');
+ videos.forEach(v=>{document.querySelector('#'+v.id+'-state').textContent=v.error?'加载或解码失败':!v.paused&&v.currentTime>0?'正在播放 '+v.currentTime.toFixed(1)+' 秒':errors.has(v.id)?errors.get(v.id):v.readyState<2&&v.hasAttribute('src')?'正在加载…':'已暂停';});
+}
+videos.forEach(v=>{['playing','pause','timeupdate','error','loadeddata','waiting'].forEach(name=>v.addEventListener(name,report));});
+document.querySelector('#start').addEventListener('click',()=>{
+ videos.forEach(v=>{errors.delete(v.id);v.muted=true;v.defaultMuted=true;if(!v.hasAttribute('src')){v.src=v.dataset.file;v.load();}v.play().catch(e=>{errors.set(v.id,e.name+': '+e.message);report();});});report();
+});
+document.querySelector('#copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(document.querySelector('#result').textContent);document.querySelector('#copy').textContent='已复制';}catch{document.querySelector('#copy').textContent='请选中下方结果复制';}});
+</script></main></body></html>
