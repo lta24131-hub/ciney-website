@@ -500,6 +500,7 @@ dialog{background:#101010;border-color:#444}dialog>p{color:#aaa}.dialog-heading 
   <link rel="stylesheet" href="hero.css?v=static-hero-20260929">
 <link rel="stylesheet" href="../shared/type.css?v=concise-lime-20260929">
 <link rel="stylesheet" href="../shared/surfaces.css?v=unified-rounding-20260929">
+<script src="../shared/playback.js?v=autoplay-recovery-20260929"></script>
 </head>
 <body data-product="two">
   <a class="skip-link" href="#main">Skip to content</a>
@@ -717,6 +718,7 @@ function createPreview(video) {
       desiredPlayback = false; blocked = true; updateControls();
     });
   }
+  window.CineyPlayback.register(video, play);
   const scene = {
     video,
     prepare,
@@ -837,6 +839,7 @@ function createScrollPreview(video) {
       blocked = true; controls();
     });
   }
+  window.CineyPlayback.register(video, play);
   function seek() {
     if (!canRun() || video.readyState < 1 || !Number.isFinite(video.duration) || video.seeking) return;
     const end = Math.max(0, video.duration - 1 / 24);
@@ -1284,7 +1287,7 @@ if ('ResizeObserver' in window) { const layoutObserver = new ResizeObserver(queu
 
 updateScroll();
 </script>
-<script src="../shared/site.js?v=20260928" defer></script><script src="../shared/field.js?v=real-20260928" defer></script>
+<script src="../shared/site.js?v=20260928" defer></script><script src="../shared/field.js?v=autoplay-recovery-20260929" defer></script>
 <script src="../shared/moves.js?v=four-grid-20260929" defer></script>
 </body>
 </html>

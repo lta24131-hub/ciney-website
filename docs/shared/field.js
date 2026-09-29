@@ -31,6 +31,7 @@
     });
   }, { threshold: [0, .15, .5] });
   items.forEach(item => {
+    window.CineyPlayback.register(item.video, () => sync(item));
     item.button.hidden = false;
     item.button.addEventListener('click', () => {
       item.pausedByUser = !item.video.paused;

@@ -81,6 +81,7 @@
     });
   });
   videos.forEach((video, index) => {
+    window.CineyPlayback.register(video, sync);
     video.addEventListener('playing', () => {
       video.closest('.field-media').classList.add('has-video');
       if (index === active) { failed = false; updateButton(); }

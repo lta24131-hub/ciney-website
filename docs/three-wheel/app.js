@@ -18,6 +18,7 @@
   function updatePlay(v){const b=$('#design-play');b.textContent=v.paused?'Play':'Pause';b.setAttribute('aria-label',`${v.paused?'Play':'Pause'} product animation`);}
   function source(v,file,poster){v.parentElement.querySelector('.media-error')?.remove();v.pause();v.poster=poster;v.src=file;v.load();}
   function loadDesign(){if(!design.getAttribute('src'))source(design,`../assets/${chapters[chapter].file}${mobile?'-mobile':''}.mp4`,`../assets/${chapters[chapter].file}.webp`);if(designVisible&&!designPaused)safePlay(design);}
+  window.CineyPlayback.register(design, () => { if(designVisible&&!designPaused)loadDesign(); });
   function selectChapter(index,manual=false){
     if(manual){designPaused=reduced;if(design.ended)design.currentTime=0;manualUntil=Date.now()+2200;const room=story.offsetHeight-$('.design-sticky').offsetHeight;const inStory=story.getBoundingClientRect().top<innerHeight&&story.getBoundingClientRect().bottom>0;if(room>200&&inStory)scrollTo({top:story.offsetTop+room*index/4-$('.header').offsetHeight,behavior:reduced?'instant':'smooth'});scrollHigh=index;}
     if(index===chapter){loadDesign();return;}chapter=index;const c=chapters[index];
