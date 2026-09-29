@@ -1,0 +1,29 @@
+/* Static product introduction; the scroll sequence follows the scene gallery. */
+.product-hero{position:relative;isolation:isolate;overflow:hidden;min-height:620px;height:calc(100svh - var(--header-height));max-height:1040px;background:#080909}
+.product-hero-copy{position:relative;z-index:2;width:57%;padding:clamp(84px,13vh,150px) 0 100px var(--page-gutter);pointer-events:none}
+.product-hero-copy a,.product-hero-copy button{pointer-events:auto}
+.product-hero .eyebrow{color:#c2c9cb;font-size:.875rem;font-weight:500;line-height:1.5;letter-spacing:.12em}
+.product-hero h1{font-size:clamp(3.8rem,6.8vw,7.8rem);font-weight:450;line-height:1.02;letter-spacing:-.055em;margin:27px 0}
+.product-hero h1 span{color:var(--lime)}
+.product-hero-description{color:#acb6ba;font-size:1.0625rem;line-height:1.6}
+.product-hero-actions{display:flex;align-items:center;gap:28px;flex-wrap:wrap;margin-top:32px}
+.product-hero-actions .button{min-height:54px;padding:16px 23px;border-radius:3px;gap:28px;font-size:1rem}
+.product-hero-actions .film-link{font-size:.9375rem;padding:16px 0}
+.product-hero-visual{position:absolute;inset:0 0 0 43%;z-index:0;background:radial-gradient(ellipse at 50% 53%,#1d241c,transparent 67%)}
+.product-hero-visual img{position:absolute;inset:7% 3% 7% 0;width:97%;height:86%;max-width:none;object-fit:contain}
+.product-hero-foot{position:absolute;bottom:27px;left:var(--page-gutter);right:var(--page-gutter);display:flex;align-items:center;justify-content:space-between;gap:24px;color:#909b9f;font-size:.75rem;line-height:1.5;letter-spacing:.08em}
+.product-hero-foot a{font-size:.875rem;letter-spacing:0}
+@media(max-width:1000px) and (min-width:761px){.product-hero-copy{width:59%}.product-hero h1{font-size:clamp(3.8rem,7.3vw,5.2rem)}.product-hero-visual{left:44%}.product-hero-actions{gap:22px}}
+@media(max-width:760px){
+ .product-hero{height:auto;min-height:0;max-height:none;display:flex;flex-direction:column}
+ .product-hero-copy{width:100%;padding:42px var(--page-gutter) 0}
+ .product-hero .eyebrow{font-size:.75rem;letter-spacing:.1em}
+ .product-hero h1{font-size:clamp(3.1rem,11.5vw,4.5rem);margin:22px 0}
+ .product-hero-actions{margin-top:22px;gap:22px}
+ .product-hero-actions .button{min-height:48px;padding:13px 18px;font-size:.9375rem}
+ .product-hero-actions .film-link{font-size:.875rem}
+ .product-hero-visual{position:relative;inset:auto;width:100%;height:clamp(320px,96vw,470px);margin:20px 0 0}
+ .product-hero-visual img{inset:0 4%;width:92%;height:100%}
+ .product-hero-foot{position:relative;inset:auto;padding:18px var(--page-gutter) 24px}
+ .product-hero-foot>span{display:none}.product-hero-foot a{font-size:.8125rem}
+}

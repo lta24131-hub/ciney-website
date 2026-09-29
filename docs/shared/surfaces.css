@@ -1,0 +1,36 @@
+/* One corner scale for the homepage and both product pages. */
+:root{
+ --radius-media:clamp(16px,2vw,28px);
+ --radius-compact:16px;
+ --radius-control:12px;
+ --radius-thumbnail:10px;
+}
+
+/* Clip the frame, including caption gradients and poster/video transitions. */
+body:is(.family-home,[data-product]) :is(.field-media,.scene-image,.reel-stage,.detail-frame),
+body[data-product] :is(.location-spread figure,.control-scene,.contact-scene,.family-visual,.demo-media){
+ border-radius:var(--radius-media);
+ overflow:hidden;
+}
+body[data-product] .design-scene>img,
+body[data-product] .chapter-media>video{
+ border-radius:var(--radius-media);
+}
+body[data-product] .move-tile .field-media{border-radius:var(--radius-compact)}
+.family-home .reel-tab>img{border-radius:var(--radius-thumbnail)}
+
+/* Keep the gallery's mobile captions outside their rounded image frames. */
+@media(min-width:900px){
+ body[data-product] .scene-card{border-radius:var(--radius-media);overflow:hidden}
+}
+
+/* Existing circular playback controls stay circular; rectangular controls soften. */
+body:is(.family-home,[data-product]) .button,
+body:is(.family-home,[data-product]) .header.site-header .product-switch a,
+body[data-product] :is(.media-error,.media-error button,.video-error button){
+ border-radius:var(--radius-control);
+}
+body[data-product] dialog,
+body[data-product] dialog.move-dialog{border-radius:var(--radius-media)}
+body[data-product] dialog>video{border-radius:var(--radius-compact)}
+body[data-product] .move-dialog>video{border-radius:0 0 var(--radius-media) var(--radius-media)}
