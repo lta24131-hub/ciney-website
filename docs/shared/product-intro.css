@@ -1,0 +1,80 @@
+/* One compact, static introduction for both products. */
+body[data-product] .product-intro {
+  display:grid;
+  grid-template-columns:minmax(0,.65fr) minmax(0,1.35fr);
+  align-items:center;
+  gap:clamp(20px,2vw,40px);
+  height:clamp(560px,calc(92svh - var(--header-height)),920px);
+  min-height:0;
+  max-height:none;
+  padding:24px max(var(--page-gutter),calc((100% - 1880px)/2)) 56px;
+  background:#080909;
+}
+body[data-product] .product-intro :is(.product-hero-copy,.hero-copy) {
+  width:100%;
+  max-width:420px;
+  justify-self:end;
+  padding:0;
+  margin:0;
+}
+body[data-product] .product-intro h1 {
+  margin:20px 0 0;
+  font-size:clamp(2.6rem,3.6vw,4rem);
+  line-height:1.06;
+}
+body[data-product] .product-intro :is(.product-hero-actions,.hero-actions) {
+  flex-direction:row;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:12px 26px;
+  margin-top:28px;
+}
+body[data-product] .product-intro :is(.product-hero-visual,.hero-product) {
+  position:relative;
+  inset:auto;
+  align-self:stretch;
+  width:100%;
+  height:100%;
+  min-height:0;
+  margin:0;
+  background:radial-gradient(ellipse at 45% 52%,#1b221a 0,transparent 67%);
+}
+body[data-product] .product-intro :is(.product-hero-visual,.hero-product) img {
+  position:relative;
+  inset:auto;
+  width:100%;
+  height:100%;
+  max-width:none;
+  object-fit:contain;
+  object-position:center;
+  transform:none;
+}
+body[data-product=three] .product-intro .hero-product img {object-position:28% center}
+body[data-product] .product-intro .product-word {display:none}
+body[data-product] .product-intro :is(.product-hero-foot,.hero-foot) {
+  position:absolute;
+  inset:auto max(var(--page-gutter),calc((100% - 1880px)/2)) 20px;
+  padding:0;
+}
+@media(max-width:1000px) and (min-width:761px) {
+  body[data-product] .product-intro {gap:20px;grid-template-columns:1fr 1fr;height:560px;padding-top:32px}
+  body[data-product] .product-intro h1 {font-size:clamp(2.55rem,4.6vw,3.5rem)}
+  body[data-product] .product-intro :is(.product-hero-actions,.hero-actions) {gap:8px 18px}
+  body[data-product] .product-intro .button {padding:13px 16px;min-height:48px;font-size:.875rem}
+  body[data-product] .product-intro :is(.film-link,.text-button) {font-size:.8125rem}
+}
+@media(max-width:760px) {
+  body[data-product] .product-intro {
+    grid-template-columns:minmax(0,1fr);
+    gap:20px;
+    height:auto;
+    padding:32px var(--page-gutter) 24px;
+  }
+  body[data-product] .product-intro :is(.product-hero-copy,.hero-copy) {max-width:none;justify-self:stretch}
+  body[data-product] .product-intro h1 {font-size:clamp(2.3rem,9vw,3.4rem);margin:16px 0 0}
+  body[data-product] .product-intro :is(.product-hero-actions,.hero-actions) {margin-top:20px;gap:8px 22px}
+  body[data-product] .product-intro :is(.product-hero-visual,.hero-product) {height:clamp(260px,83vw,410px)}
+  body[data-product=three] .product-intro .hero-product {height:clamp(320px,100vw,450px)}
+  body[data-product=three] .product-intro .hero-product img {object-position:center}
+  body[data-product] .product-intro :is(.product-hero-foot,.hero-foot) {position:relative;inset:auto;margin-top:0}
+}
