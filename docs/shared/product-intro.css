@@ -10,6 +10,17 @@ body[data-product] .product-intro {
   padding:24px max(var(--page-gutter),calc((100% - 1880px)/2)) 56px;
   background:#080909;
 }
+/* A quiet studio wash, kept behind the product and away from the copy. */
+body[data-product] .product-intro::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  background:
+    radial-gradient(ellipse min(75vw,1500px) 75% at 65% 48%,#8b9d6621,transparent 72%),
+    radial-gradient(ellipse min(90vw,1900px) 22% at 62% 86%,#94a78012,transparent 74%);
+}
 body[data-product] .product-intro :is(.product-hero-copy,.hero-copy) {
   width:100%;
   max-width:420px;
@@ -37,7 +48,21 @@ body[data-product] .product-intro :is(.product-hero-visual,.hero-product) {
   height:100%;
   min-height:0;
   margin:0;
-  background:radial-gradient(ellipse at 45% 52%,#1b221a 0,transparent 67%);
+  --stage-center:50%;
+  background:none;
+}
+body[data-product] .product-intro :is(.product-hero-visual,.hero-product)::before {
+  content:"";
+  position:absolute;
+  left:var(--stage-center);
+  bottom:-2%;
+  width:min(90%,850px);
+  height:17%;
+  transform:translateX(-50%);
+  pointer-events:none;
+  background:
+    radial-gradient(ellipse 34% 17% at 50% 52%,#000a,transparent 100%),
+    radial-gradient(ellipse at center,#a4b58a1c,transparent 68%);
 }
 body[data-product] .product-intro :is(.product-hero-visual,.hero-product) img {
   position:relative;
@@ -50,6 +75,7 @@ body[data-product] .product-intro :is(.product-hero-visual,.hero-product) img {
   transform:none;
 }
 body[data-product=three] .product-intro .hero-product img {object-position:28% center}
+body[data-product=three] .product-intro .hero-product {--stage-center:37%}
 body[data-product] .product-intro .product-word {display:none}
 body[data-product] .product-intro :is(.product-hero-foot,.hero-foot) {
   position:absolute;
@@ -75,6 +101,10 @@ body[data-product] .product-intro :is(.product-hero-foot,.hero-foot) {
   body[data-product] .product-intro :is(.product-hero-actions,.hero-actions) {margin-top:20px;gap:8px 22px}
   body[data-product] .product-intro :is(.product-hero-visual,.hero-product) {height:clamp(260px,83vw,410px)}
   body[data-product=three] .product-intro .hero-product {height:clamp(320px,100vw,450px)}
+  body[data-product] .product-intro::before {
+    background:radial-gradient(ellipse 95% 46% at 50% 70%,#8b9d6621,transparent 76%);
+  }
+  body[data-product=three] .product-intro .hero-product {--stage-center:50%}
   body[data-product=three] .product-intro .hero-product img {object-position:center}
   body[data-product] .product-intro :is(.product-hero-foot,.hero-foot) {position:relative;inset:auto;margin-top:0}
 }
