@@ -2,6 +2,7 @@
   const dialog = document.querySelector('.move-dialog');
   if (!dialog) return;
   const video = dialog.querySelector('video');
+  const player = window.CineyPlayback.dialog(video, dialog);
   const title = dialog.querySelector('h2');
   let opener;
   document.querySelectorAll('[data-move-src]').forEach(button => {
@@ -10,11 +11,11 @@
       title.textContent = button.dataset.moveTitle;
       video.setAttribute('aria-label', button.dataset.moveTitle);
       video.poster = button.dataset.movePoster;
-      video.src = button.dataset.moveSrc;
+      window.CineyPlayback.source(video, button.dataset.moveSrc);
       video.muted = true;
       video.loop = true;
       dialog.showModal();
-      video.play().catch(() => {});
+      player.play();
     });
   });
   dialog.querySelector('[data-move-close]').addEventListener('click', () => dialog.close());
@@ -25,8 +26,6 @@
   });
   dialog.addEventListener('close', () => {
     video.pause();
-    video.removeAttribute('src');
-    video.load();
     opener?.focus({ preventScroll: true });
   });
   document.addEventListener('visibilitychange', () => {

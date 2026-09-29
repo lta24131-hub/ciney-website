@@ -500,7 +500,7 @@ dialog{background:#101010;border-color:#444}dialog>p{color:#aaa}.dialog-heading 
   <link rel="stylesheet" href="hero.css?v=static-hero-20260929">
 <link rel="stylesheet" href="../shared/type.css?v=concise-lime-20260929">
 <link rel="stylesheet" href="../shared/surfaces.css?v=unified-rounding-20260929">
-<script src="../shared/playback.js?v=autoplay-recovery-20260929"></script>
+<script src="../shared/playback.js?v=buffered-playback-20260929"></script>
 </head>
 <body data-product="two">
   <a class="skip-link" href="#main">Skip to content</a>
@@ -689,12 +689,11 @@ function createPreview(video) {
     video.preload = preload;
     if (attachedKey === key) return;
     attachedKey = key;
-    video.src = mediaSource(key);
-    video.load();
+    window.CineyPlayback.source(video, mediaSource(key));
   }
   function label() { return (stabilityContent[key] || motionContent[key]).label; }
   function updateControls() {
-    const playing = !video.paused;
+    const playing = !video.paused || (window.CineyPlayback.recovering(video) && wanted);
     toggle.innerHTML = playing ? 'Pause <span aria-hidden="true">Ⅱ</span>' : 'Play <span aria-hidden="true">▶</span>';
     toggle.setAttribute('aria-label', (playing ? 'Pause ' : 'Play ') + label() + ' preview');
     state.textContent = failed ? 'Could not load · tap Retry' : loading && active && wanted ? 'Loading preview…' : playing ? (video.muted ? 'Playing · muted' : 'Playing · sound on') : !wanted ? 'Paused' : blocked ? 'Tap play to preview' : 'Plays when in view';
@@ -705,7 +704,7 @@ function createPreview(video) {
     desiredPlayback = false; requestId++; video.pause(); updateControls();
   }
   function play() {
-    if (!active || !wanted || document.hidden || dialog.open || !video.paused) return;
+    if (!active || !wanted || document.hidden || dialog.open || !video.paused || window.CineyPlayback.recovering(video)) return;
     prepare('auto');
     desiredPlayback = true;
     const request = ++requestId;
@@ -714,7 +713,7 @@ function createPreview(video) {
       if (!active || !wanted || document.hidden || dialog.open) { suspend(); return; }
       blocked = false; updateControls();
     }).catch(error => {
-      if (request !== requestId || error.name === 'AbortError') return;
+      if (request !== requestId || error.name === 'AbortError' || window.CineyPlayback.recovering(video)) return;
       desiredPlayback = false; blocked = true; updateControls();
     });
   }
@@ -731,14 +730,14 @@ function createPreview(video) {
       if (poster) { poster.src = mediaPoster(key); poster.hidden = false; }
       video.dataset.preview = key; video.poster = mediaPoster(key);
       attachedKey = '';
-      video.removeAttribute('src'); video.load();
+      window.CineyPlayback.clear(video);
       video.setAttribute('aria-label', label() + ' product animation');
       card.querySelector('.video-error')?.remove(); play(); updateControls();
     }
   };
   toggle.addEventListener('click', () => {
-    if (failed) { failed = false; loading = true; wanted = true; video.load(); requestScene(scene); }
-    else if (!video.paused) { wanted = false; suspend(); }
+    if (failed) { failed = false; loading = true; wanted = true; window.CineyPlayback.retry(video); requestScene(scene); }
+    else if (!video.paused || (window.CineyPlayback.recovering(video) && wanted)) { wanted = false; suspend(); }
     else { wanted = true; blocked = false; requestScene(scene); }
   });
   video.addEventListener('play', () => {
@@ -747,7 +746,7 @@ function createPreview(video) {
     updateControls();
   });
   video.addEventListener('pause', () => {
-    if (desiredPlayback && active && video.paused && !video.ended && !video.seeking) { wanted = false; desiredPlayback = false; }
+    if (desiredPlayback && active && video.paused && !video.ended && !video.seeking && !video.error && !window.CineyPlayback.recovering(video)) { wanted = false; desiredPlayback = false; }
     updateControls();
   });
   video.addEventListener('volumechange', () => { updateControls(); if (!video.paused && !video.muted) state.textContent = 'Playing · sound on'; });
@@ -766,6 +765,7 @@ function createPreview(video) {
   video.addEventListener('loadeddata', frameReady);
   video.addEventListener('playing', frameReady);
   video.addEventListener('waiting', () => { loading = true; updateControls(); });
+  video.addEventListener('buffering', () => { loading = true; blocked = false; updateControls(); });
   video.addEventListener('error', () => { failed = true; loading = false; if (poster) poster.hidden = false; updateControls(); });
   scenes.push(scene); updateControls(); return scene;
 }
@@ -801,8 +801,7 @@ function createScrollPreview(video) {
     video.preload = preload;
     if (attachedKey === key) return;
     attachedKey = key;
-    video.src = source();
-    video.load();
+    window.CineyPlayback.source(video, source());
   }
   const canRun = () => active && !failed && !document.hidden && !dialog.open;
   const formatTime = value => Math.floor(value / 60) + ':' + String(Math.floor(value % 60)).padStart(2, '0');
@@ -827,7 +826,7 @@ function createScrollPreview(video) {
   }
   function pause() { playRequest++; video.pause(); }
   function play() {
-    if (!canRun() || !wanted || scrolling || dragging || video.seeking || !video.paused) return;
+    if (!canRun() || !wanted || scrolling || dragging || video.seeking || !video.paused || window.CineyPlayback.recovering(video)) return;
     prepare('auto');
     const request = ++playRequest;
     video.play().then(() => {
@@ -835,7 +834,7 @@ function createScrollPreview(video) {
       if (!canRun() || !wanted || scrolling || dragging) { pause(); return; }
       blocked = false; controls();
     }).catch(error => {
-      if (request !== playRequest || error.name === 'AbortError') return;
+      if (request !== playRequest || error.name === 'AbortError' || window.CineyPlayback.recovering(video)) return;
       blocked = true; controls();
     });
   }
@@ -865,7 +864,7 @@ function createScrollPreview(video) {
     targetTime = positions.get(key) || 0; pendingAdvance = 0;
     poster.src = mediaPoster(key); poster.hidden = false;
     attachedKey = '';
-    video.removeAttribute('src'); video.load();
+    window.CineyPlayback.clear(video);
     card.querySelector('.video-error')?.remove();
     if (active) prepare('auto');
     controls();
@@ -920,6 +919,7 @@ function createScrollPreview(video) {
   video.addEventListener('playing', revealFrame);
   video.addEventListener('timeupdate', controls);
   video.addEventListener('waiting', () => { loading = true; controls(); });
+  video.addEventListener('buffering', () => { loading = true; blocked = false; controls(); });
   video.addEventListener('error', () => { failed = true; loading = false; poster.hidden = false; controls(); });
   video.addEventListener('play', controls);
   video.addEventListener('pause', controls);
@@ -946,6 +946,7 @@ if ('IntersectionObserver' in window) {
 document.addEventListener('visibilitychange', () => { if (document.hidden) film.pause(); directViewport(); });
 reducedMotion.addEventListener('change', () => { if (reducedMotion.matches) { scenes.forEach(scene => scene.reduceMotion?.()); directViewport(); } queueScrollUpdate(); });
 
+const filmPlayer = window.CineyPlayback.dialog(film, dialog);
 document.querySelectorAll('video:not([data-field-video])').forEach(video => video.addEventListener('error', () => {
   if (video.parentElement.querySelector('.video-error')) return;
   const message = document.createElement('p'); message.className = 'video-error'; message.textContent = 'This video could not be loaded. ';
@@ -955,11 +956,11 @@ function openFilm(key, title, trigger) {
   filmTrigger = trigger;
   $('#film-title').textContent = 'CineyBot — ' + title;
   film.poster = mediaPoster(key === 'formal' ? 'hero' : key);
-  film.src = mediaSource(key);
+  window.CineyPlayback.source(film, mediaSource(key));
   film.setAttribute('aria-label', title + ' complete animation');
   dialog.querySelector('.video-error')?.remove();
   dialog.querySelector('p').textContent = key === 'stairs' ? 'Complete motion concept · 1080p' : key === 'formal' || stabilityContent[key] ? 'Complete product animation · 1080p' : 'Complete trajectory animation';
-  film.load(); dialog.showModal(); document.body.style.overflow = 'hidden'; directViewport(); film.play().catch(() => {});
+  dialog.showModal(); document.body.style.overflow = 'hidden'; directViewport(); filmPlayer.play();
 }
 document.querySelectorAll('[data-film]').forEach(button => button.addEventListener('click', () => { const key = button.dataset.film; openFilm(key, key === 'formal' ? 'The product film' : (stabilityContent[key] || motionContent[key]).label, button); }));
 $('#close-film').addEventListener('click', () => dialog.close());
@@ -1287,7 +1288,7 @@ if ('ResizeObserver' in window) { const layoutObserver = new ResizeObserver(queu
 
 updateScroll();
 </script>
-<script src="../shared/site.js?v=20260928" defer></script><script src="../shared/field.js?v=autoplay-recovery-20260929" defer></script>
-<script src="../shared/moves.js?v=four-grid-20260929" defer></script>
+<script src="../shared/site.js?v=20260928" defer></script><script src="../shared/field.js?v=buffered-playback-20260929" defer></script>
+<script src="../shared/moves.js?v=buffered-playback-20260929" defer></script>
 </body>
 </html>

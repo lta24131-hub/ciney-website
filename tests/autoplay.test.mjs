@@ -25,6 +25,7 @@ function setup({reduce = false, saveData = false, mobile = false, blocked = fals
     emit(type, event = {}) { for (const fn of this.listeners.get(type) || []) fn(event); }
     setAttribute(key, value) { this.attributes.set(key, value); }
     hasAttribute(key) { return this.attributes.has(key); }
+    getAttribute(key) { return this.attributes.get(key) || null; }
     removeAttribute(key) { this.attributes.delete(key); }
     focus() { document.activeElement = this; }
     contains(element) { return element === this; }
@@ -58,7 +59,7 @@ function setup({reduce = false, saveData = false, mobile = false, blocked = fals
   const reduced = Object.assign(new Element(), {matches: reduce});
   let observe;
   const window = new Element();
-  const context = vm.createContext({window,
+  const context = vm.createContext({window, clearTimeout,
     document, navigator: {connection: {saveData}},
     matchMedia: query => query.includes('prefers-reduced-motion') ? reduced : {matches: mobile},
     IntersectionObserver: class { constructor(fn) { observe = fn; } observe() {} }

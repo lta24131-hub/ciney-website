@@ -23,21 +23,20 @@
   let failed = false;
 
   function updateButton() {
-    const paused = videos[active].paused;
+    const paused = videos[active].paused && !(window.CineyPlayback.recovering(videos[active]) && !pausedByUser);
     toggle.querySelector('[data-reel-label]').textContent = failed ? 'Retry' : paused ? 'Play' : 'Pause';
     toggle.querySelector('span').textContent = paused ? '▶' : 'Ⅱ';
     toggle.setAttribute('aria-label', `${failed ? 'Retry' : paused ? 'Play' : 'Pause'} scene films`);
   }
   function load(video) {
     if (video.hasAttribute('src')) return;
-    video.src = mobile.matches ? video.dataset.mobileSrc : video.dataset.src;
-    video.load();
+    window.CineyPlayback.source(video, mobile.matches ? video.dataset.mobileSrc : video.dataset.src);
   }
   function sync() {
     videos.forEach((video, index) => {
       if (index === active && visible && !document.hidden && !pausedByUser && !failed) {
         load(video);
-        video.play().catch(() => { if (index === active) updateButton(); });
+        if (!window.CineyPlayback.recovering(video)) video.play().catch(() => { if (index === active) updateButton(); });
       } else video.pause();
     });
     updateButton();
@@ -86,7 +85,7 @@
       video.closest('.field-media').classList.add('has-video');
       if (index === active) { failed = false; updateButton(); }
     });
-    ['play', 'pause'].forEach(event => video.addEventListener(event, () => {
+    ['play', 'pause', 'buffering'].forEach(event => video.addEventListener(event, () => {
       if (index === active) updateButton();
     }));
     video.addEventListener('timeupdate', () => {
@@ -116,8 +115,8 @@
   toggle.hidden = false;
   toggle.addEventListener('click', () => {
     const video = videos[active];
-    if (failed) { video.removeAttribute('src'); failed = false; pausedByUser = false; }
-    else pausedByUser = !video.paused;
+    if (failed) { window.CineyPlayback.clear(video); failed = false; pausedByUser = false; }
+    else pausedByUser = !video.paused || (window.CineyPlayback.recovering(video) && !pausedByUser);
     sync();
   });
   new IntersectionObserver(entries => {
